@@ -3,7 +3,8 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci || npm install
+# ignore-scripts: prisma generate nécessite le schéma (copié au stage builder)
+RUN npm install --ignore-scripts
 
 FROM node:22-alpine AS builder
 WORKDIR /app
@@ -37,5 +38,4 @@ COPY --from=builder /app/next.config.ts ./
 USER nextjs
 EXPOSE 3000
 
-# Migrations puis démarrage
 CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
