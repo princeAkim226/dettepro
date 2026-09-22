@@ -138,7 +138,7 @@ export function RemindButton({ customerId, label }: { customerId: string; label:
             const res = await remindNowAction(customerId);
             if (res.error) setMsg(res.error);
             else if (res.dryRun) setMsg("Simulation uniquement (dry-run) — pas d'envoi réel");
-            else setMsg("Envoyé. Cherche sur WhatsApp un message du n° US +1 555-…");
+            else setMsg("Envoyé (texte + vocal si dispo). Regarde WhatsApp (+1 555-…).");
           })
         }
       >

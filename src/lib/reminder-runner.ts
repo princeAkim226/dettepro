@@ -67,7 +67,10 @@ export async function runReminderTick(now = new Date()) {
             if (res.ok) sent++;
           } else {
             const audio = await synthesizeSpeech(message, settings.user.locale);
-            const res = await sendWhatsAppAudio(phone, audio);
+            const res = await sendWhatsAppAudio(phone, audio.buffer, {
+              filename: audio.filename,
+              contentType: audio.contentType,
+            });
             await prisma.reminderLog.create({
               data: {
                 customerId: customer.id,
@@ -131,8 +134,8 @@ export async function sendReminderNow(opts: {
     template: settings?.messageTemplate,
   });
 
-  // Bouton "Rappeler maintenant" : texte seulement (le vocal attend un vrai TTS)
-  const channel = opts.channel ?? "text";
+  // Texte + vocal si TTS activé
+  const channel = opts.channel ?? (getEnv().ttsEnabled ? "both" : "text");
   const phone = normalizePhone(customer.phone);
   const channels = resolveChannels(channel);
 
@@ -154,7 +157,10 @@ export async function sendReminderNow(opts: {
       if (!res.ok) throw new Error(res.error);
     } else {
       const audio = await synthesizeSpeech(message, user.locale);
-      const res = await sendWhatsAppAudio(phone, audio);
+      const res = await sendWhatsAppAudio(phone, audio.buffer, {
+        filename: audio.filename,
+        contentType: audio.contentType,
+      });
       dryRun = dryRun || res.dryRun === true;
       await prisma.reminderLog.create({
         data: {
@@ -166,7 +172,10 @@ export async function sendReminderNow(opts: {
           error: res.ok ? null : res.error,
         },
       });
-      if (!res.ok) throw new Error(res.error);
+      // Vocal en bonus : on ne fait pas échouer le rappel si le texte a déjà marché
+      if (!res.ok) {
+        console.error("[remind-now] voice failed:", res.error);
+      }
     }
   }
 

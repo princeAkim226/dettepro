@@ -60,15 +60,25 @@ export async function sendWhatsAppText(toPhone: string, body: string) {
   }
 }
 
-export async function sendWhatsAppAudio(toPhone: string, audioBuffer: Buffer, filename = "rappel.ogg") {
+export async function sendWhatsAppAudio(
+  toPhone: string,
+  audioBuffer: Buffer,
+  opts?: { filename?: string; contentType?: string },
+) {
   const env = getEnv();
+  const filename = opts?.filename ?? "rappel.mp3";
+  const contentType = opts?.contentType ?? "audio/mpeg";
+
   if (env.whatsappDryRun || !env.whatsappToken || !env.whatsappPhoneNumberId) {
     console.log(`[WA dry-run] AUDIO → ${toPhone} (${audioBuffer.length} bytes)`);
     return { ok: true as const, dryRun: true };
   }
 
-  // Sans vrai TTS, ne pas uploader un faux fichier (Meta → error #100 octet-stream)
-  if (!env.ttsEnabled || audioBuffer.length < 100 || audioBuffer.toString("utf8", 0, 20).startsWith("TTS_PLACEHOLDER")) {
+  if (
+    !env.ttsEnabled ||
+    audioBuffer.length < 100 ||
+    audioBuffer.toString("utf8", 0, 20).startsWith("TTS_PLACEHOLDER")
+  ) {
     return {
       ok: false as const,
       error: "Rappel vocal non disponible pour le moment (texte uniquement).",
@@ -79,10 +89,10 @@ export async function sendWhatsAppAudio(toPhone: string, audioBuffer: Buffer, fi
   form.append("messaging_product", "whatsapp");
   form.append(
     "file",
-    new Blob([new Uint8Array(audioBuffer)], { type: "audio/ogg" }),
+    new Blob([new Uint8Array(audioBuffer)], { type: contentType }),
     filename,
   );
-  form.append("type", "audio/ogg");
+  form.append("type", contentType);
 
   const uploadUrl = `https://graph.facebook.com/${env.whatsappApiVersion}/${env.whatsappPhoneNumberId}/media`;
   try {

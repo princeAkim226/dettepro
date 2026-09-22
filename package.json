@@ -22,6 +22,7 @@
     "better-auth": "^1.7.5",
     "date-fns": "^4.4.0",
     "dotenv": "^17.2.2",
+    "msedge-tts": "^2.0.7",
     "next": "15.5.25",
     "next-intl": "^4.14.6",
     "react": "19.1.0",
