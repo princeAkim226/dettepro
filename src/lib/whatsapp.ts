@@ -28,25 +28,36 @@ export async function sendWhatsAppText(toPhone: string, body: string) {
   }
 
   const url = `https://graph.facebook.com/${env.whatsappApiVersion}/${env.whatsappPhoneNumberId}/messages`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.whatsappToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      messaging_product: "whatsapp",
-      to: toPhone.replace(/^\+/, ""),
-      type: "text",
-      text: { body },
-    }),
-  });
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.whatsappToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        to: toPhone.replace(/^\+/, ""),
+        type: "text",
+        text: { body },
+      }),
+    });
 
-  if (!res.ok) {
-    const err = formatWhatsAppError(await res.text());
-    return { ok: false as const, error: err };
+    if (!res.ok) {
+      const err = formatWhatsAppError(await res.text());
+      return { ok: false as const, error: err };
+    }
+    return { ok: true as const, dryRun: false };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return {
+      ok: false as const,
+      error:
+        msg === "fetch failed"
+          ? "Impossible de joindre WhatsApp (réseau). Réessaie dans quelques secondes."
+          : msg,
+    };
   }
-  return { ok: true as const, dryRun: false };
 }
 
 export async function sendWhatsAppAudio(toPhone: string, audioBuffer: Buffer, filename = "rappel.ogg") {
