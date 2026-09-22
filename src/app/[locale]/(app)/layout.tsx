@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { BottomNav, LogoutButton } from "@/components/AppChrome";
+import { BottomNav, LogoutButton, LocaleSwitcher } from "@/components/AppChrome";
 import { requireUser } from "@/lib/session";
 import { getAccessStatus } from "@/lib/subscription";
 
@@ -25,7 +25,10 @@ export default async function AppLayout({
           </div>
           <div style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{user.shopName}</div>
         </div>
-        <LogoutButton label={t("nav.logout")} />
+        <div style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
+          <LocaleSwitcher />
+          <LogoutButton label={t("nav.logout")} />
+        </div>
       </header>
       {!access.ok && user.role !== "ADMIN" && (
         <div
