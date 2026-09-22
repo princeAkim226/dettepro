@@ -206,7 +206,7 @@ export async function saveReminderSettingsAction(formData: FormData) {
 export async function remindNowAction(customerId: string) {
   const userId = await currentUserId();
   try {
-    await sendReminderNow({ userId, customerId });
+    await sendReminderNow({ userId, customerId, channel: "text" });
     return { ok: true };
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Échec du rappel" };
