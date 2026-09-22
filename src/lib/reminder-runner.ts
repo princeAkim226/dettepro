@@ -5,6 +5,15 @@ import { sendWhatsAppAudio, sendWhatsAppText } from "@/lib/whatsapp";
 import { synthesizeSpeech } from "@/lib/tts";
 import { normalizePhone } from "@/lib/phone";
 import { getAccessStatus } from "@/lib/subscription";
+import { getEnv } from "@/lib/env";
+
+function resolveChannels(channel: string): Array<"text" | "voice"> {
+  const env = getEnv();
+  const voiceOk = env.ttsEnabled && !env.whatsappDryRun;
+  if (channel === "voice") return voiceOk ? ["voice"] : ["text"];
+  if (channel === "text") return ["text"];
+  return voiceOk ? ["text", "voice"] : ["text"];
+}
 
 export async function runReminderTick(now = new Date()) {
   const settingsList = await prisma.reminderSettings.findMany({
@@ -39,12 +48,7 @@ export async function runReminderTick(now = new Date()) {
       });
 
       const phone = normalizePhone(customer.phone);
-      const channels =
-        settings.channel === "both"
-          ? (["text", "voice"] as const)
-          : settings.channel === "voice"
-            ? (["voice"] as const)
-            : (["text"] as const);
+      const channels = resolveChannels(settings.channel);
 
       for (const channel of channels) {
         try {
@@ -127,14 +131,10 @@ export async function sendReminderNow(opts: {
     template: settings?.messageTemplate,
   });
 
-  const channel = opts.channel ?? settings?.channel ?? "both";
+  // Bouton "Rappeler maintenant" : texte seulement (le vocal attend un vrai TTS)
+  const channel = opts.channel ?? "text";
   const phone = normalizePhone(customer.phone);
-  const channels =
-    channel === "both"
-      ? (["text", "voice"] as const)
-      : channel === "voice"
-        ? (["voice"] as const)
-        : (["text"] as const);
+  const channels = resolveChannels(channel);
 
   for (const ch of channels) {
     if (ch === "text") {
