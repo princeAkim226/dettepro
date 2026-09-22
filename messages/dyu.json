@@ -1,0 +1,96 @@
+{
+  "brand": "DettePro",
+  "tagline": "N bɛ i ka crédit clients ɲɛnabɔ",
+  "hero": "Crédit tigɛ banna",
+  "heroSub": "Cahier jɛman, total automatic, WhatsApp rappel.",
+  "ctaStart": "Daminɛ",
+  "ctaLogin": "Don",
+  "nav": {
+    "dashboard": "Yɔrɔ",
+    "customers": "Clients",
+    "reminders": "Rappels",
+    "billing": "Abonnement",
+    "admin": "Admin",
+    "logout": "Bɔ"
+  },
+  "auth": {
+    "loginTitle": "Don",
+    "registerTitle": "Konto kɛ",
+    "phone": "Telefone",
+    "password": "Kɔdi",
+    "name": "I tɔgɔ",
+    "shopName": "Boutique tɔgɔ",
+    "locale": "Kan",
+    "submitLogin": "Don",
+    "submitRegister": "S'inscrire",
+    "noAccount": "Konto tɛ?",
+    "hasAccount": "Konto bɛ yen?"
+  },
+  "dashboard": {
+    "totalDue": "Total",
+    "customers": "Clients",
+    "addCustomer": "Client kura",
+    "empty": "Client si tɛ yen.",
+    "owes": "ka san"
+  },
+  "customer": {
+    "balance": "Solde",
+    "addDebt": "Dette fara",
+    "addPayment": "Paiement sɛbɛn",
+    "remind": "Rappel kɛ sisan",
+    "history": "Tariku",
+    "debt": "Dette",
+    "payment": "Paiement",
+    "reason": "Kun",
+    "amount": "Wari (FCFA)",
+    "note": "Note",
+    "save": "Marayali",
+    "phone": "WhatsApp",
+    "notes": "Notes"
+  },
+  "reminders": {
+    "title": "Rappels automatiques",
+    "enabled": "Rappels wuli",
+    "channel": "Canal",
+    "text": "Sɛbɛn",
+    "voice": "Kan",
+    "both": "Sɛbɛn + kan",
+    "frequency": "Waati",
+    "daily": "Don o don",
+    "weekly": "Dɔgɔkun kelen",
+    "everyN": "Don N kɔnɔ",
+    "day": "Don",
+    "hour": "Lɛrɛ",
+    "template": "Message (si taa)",
+    "save": "Marayali",
+    "hint": "Ouagadougou lɛrɛ (GMT)."
+  },
+  "billing": {
+    "title": "Abonnement",
+    "price": "2 000 FCFA / kalo",
+    "trial": "Essai fo {date}",
+    "active": "Abonnement fo {date}",
+    "expired": "Essai ban — abonnement kɛ",
+    "method": "Paiement cogo",
+    "reference": "Référence",
+    "submit": "N ye san — preuve ci",
+    "pending": "Preuve bɛ makɛnɛya la",
+    "payTo": "2 000 FCFA ci :"
+  },
+  "admin": {
+    "title": "Paiement preuves",
+    "approve": "Sɔn",
+    "reject": "Banna",
+    "empty": "Preuve si tɛ"
+  },
+  "common": {
+    "loading": "A bɛ taa…",
+    "error": "Fili bɛ yen",
+    "back": "Segin"
+  },
+  "locales": {
+    "fr": "Français",
+    "dyu": "Dioula",
+    "mos": "Mooré"
+  }
+}

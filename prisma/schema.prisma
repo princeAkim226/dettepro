@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  phone       String?  @unique
+  shopName    String   @default("")
+  locale      String   @default("fr")
+  role        String   @default("SHOPKEEPER")
+  trialEndsAt DateTime @default(now())
+
+  sessions         Session[]
+  accounts         Account[]
+  customers        Customer[]
+  subscriptions    Subscription[]
+  paymentProofs    PaymentProof[]
+  reminderSettings ReminderSettings?
+  reminderLogs     ReminderLog[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  debts        Debt[]
+  payments     Payment[]
+  reminderLogs ReminderLog[]
+
+  @@index([userId])
+}
+
+model Debt {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  amount     Int
+  reason     String?
+  createdAt  DateTime @default(now())
+
+  payments Payment[]
+
+  @@index([customerId])
+}
+
+model Payment {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  debtId     String?
+  debt       Debt?    @relation(fields: [debtId], references: [id], onDelete: SetNull)
+  amount     Int
+  note       String?
+  createdAt  DateTime @default(now())
+
+  @@index([customerId])
+  @@index([debtId])
+}
+
+model Subscription {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Int       @default(2000)
+  status    String    @default("pending")
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  paymentProof PaymentProof?
+
+  @@index([userId])
+  @@index([status])
+}
+
+model PaymentProof {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptionId String?   @unique
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  method         String
+  reference      String
+  note           String?
+  status         String    @default("pending")
+  reviewedAt     DateTime?
+  reviewedBy     String?
+  createdAt      DateTime  @default(now())
+
+  @@index([userId])
+  @@index([status])
+}
+
+model ReminderSettings {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enabled         Boolean   @default(true)
+  channel         String    @default("both")
+  frequencyType   String    @default("weekly")
+  everyNDays      Int?
+  weeklyDay       Int       @default(5)
+  hour            Int       @default(9)
+  minute          Int       @default(0)
+  messageTemplate String?
+  lastRunAt       DateTime?
+  updatedAt       DateTime  @updatedAt
+}
+
+model ReminderLog {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel    String
+  status     String
+  message    String?
+  error      String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([customerId])
+  @@index([createdAt])
+}

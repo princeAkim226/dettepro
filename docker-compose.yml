@@ -1,0 +1,16 @@
+# Local uniquement — NE PAS utiliser sur le VPS Coolify (Postgres dédié ailleurs)
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dettepro
+      POSTGRES_PASSWORD: dettepro_dev
+      POSTGRES_DB: dettepro
+    ports:
+      - "5432:5432"
+    volumes:
+      - dettepro_pg:/var/lib/postgresql/data
+
+volumes:
+  dettepro_pg:

@@ -1,0 +1,96 @@
+{
+  "brand": "DettePro",
+  "tagline": "Mam na fo crédit customers",
+  "hero": "Crédit yɩɩre pʋgẽ",
+  "heroSub": "Cahier yʋʋm, total automatique, WhatsApp rappel.",
+  "ctaStart": "Sɩnda",
+  "ctaLogin": "Kẽnga",
+  "nav": {
+    "dashboard": "Yɩɩre",
+    "customers": "Clients",
+    "reminders": "Rappels",
+    "billing": "Abonnement",
+    "admin": "Admin",
+    "logout": "Yi"
+  },
+  "auth": {
+    "loginTitle": "Kẽnga",
+    "registerTitle": "Compte maan",
+    "phone": "Telefon",
+    "password": "Code",
+    "name": "Fo yuure",
+    "shopName": "Boutique yuure",
+    "locale": "Goama",
+    "submitLogin": "Kẽnga",
+    "submitRegister": "S'inscrire",
+    "noAccount": "Compte ka be?",
+    "hasAccount": "Compte be me?"
+  },
+  "dashboard": {
+    "totalDue": "Total",
+    "customers": "Clients",
+    "addCustomer": "Client paalga",
+    "empty": "Client ka be.",
+    "owes": "tara"
+  },
+  "customer": {
+    "balance": "Solde",
+    "addDebt": "Dette paase",
+    "addPayment": "Paiement sɛbɛ",
+    "remind": "Rappel zĩnga",
+    "history": "Tarɩk",
+    "debt": "Dette",
+    "payment": "Paiement",
+    "reason": "Sũuri",
+    "amount": "Ligdi (FCFA)",
+    "note": "Note",
+    "save": "Sɛbɛ",
+    "phone": "WhatsApp",
+    "notes": "Notes"
+  },
+  "reminders": {
+    "title": "Rappels automatiques",
+    "enabled": "Rappels yɩɩ",
+    "channel": "Canal",
+    "text": "Gom-bɩɩse",
+    "voice": "Gomde",
+    "both": "Gom-bɩɩse + gomde",
+    "frequency": "Tɩme",
+    "daily": "Raoao",
+    "weekly": "Dbare yɩɩnde",
+    "everyN": "Rao N",
+    "day": "Rao",
+    "hour": "Wakate",
+    "template": "Message (sẽn pa tõe)",
+    "save": "Sɛbɛ",
+    "hint": "Ouagadougou wakate (GMT)."
+  },
+  "billing": {
+    "title": "Abonnement",
+    "price": "2 000 FCFA / kalã",
+    "trial": "Essai ta {date}",
+    "active": "Abonnement ta {date}",
+    "expired": "Essai yaol — abonnement maan",
+    "method": "Paiement tɩre",
+    "reference": "Référence",
+    "submit": "Mam saana — preuve tɩm",
+    "pending": "Preuve tõe la",
+    "payTo": "Tɩm 2 000 FCFA :"
+  },
+  "admin": {
+    "title": "Paiement preuves",
+    "approve": "Sõng",
+    "reject": "Zãse",
+    "empty": "Preuve ka be"
+  },
+  "common": {
+    "loading": "Tõe la…",
+    "error": "Yɩɩre be",
+    "back": "Lebge"
+  },
+  "locales": {
+    "fr": "Français",
+    "dyu": "Dioula",
+    "mos": "Mooré"
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "brand": "DettePro",
+  "tagline": "Je gère tes crédits clients",
+  "hero": "Fini les pertes sur le crédit",
+  "heroSub": "Cahier propre, totaux automatiques, rappels WhatsApp.",
+  "ctaStart": "Commencer",
+  "ctaLogin": "Connexion",
+  "nav": {
+    "dashboard": "Accueil",
+    "customers": "Clients",
+    "reminders": "Rappels",
+    "billing": "Abonnement",
+    "admin": "Admin",
+    "logout": "Déconnexion"
+  },
+  "auth": {
+    "loginTitle": "Connexion",
+    "registerTitle": "Créer mon compte",
+    "phone": "Téléphone",
+    "password": "Mot de passe",
+    "name": "Votre nom",
+    "shopName": "Nom de la boutique",
+    "locale": "Langue",
+    "submitLogin": "Se connecter",
+    "submitRegister": "S'inscrire",
+    "noAccount": "Pas encore de compte ?",
+    "hasAccount": "Déjà un compte ?"
+  },
+  "dashboard": {
+    "totalDue": "Total dû",
+    "customers": "Clients",
+    "addCustomer": "Nouveau client",
+    "empty": "Aucun client pour l'instant.",
+    "owes": "doit"
+  },
+  "customer": {
+    "balance": "Solde",
+    "addDebt": "Ajouter une dette",
+    "addPayment": "Enregistrer un paiement",
+    "remind": "Rappeler maintenant",
+    "history": "Historique",
+    "debt": "Dette",
+    "payment": "Paiement",
+    "reason": "Motif",
+    "amount": "Montant (FCFA)",
+    "note": "Note",
+    "save": "Enregistrer",
+    "phone": "WhatsApp",
+    "notes": "Notes"
+  },
+  "reminders": {
+    "title": "Rappels automatiques",
+    "enabled": "Activer les rappels",
+    "channel": "Canal",
+    "text": "Texte",
+    "voice": "Vocal",
+    "both": "Texte + vocal",
+    "frequency": "Fréquence",
+    "daily": "Chaque jour",
+    "weekly": "Chaque semaine",
+    "everyN": "Tous les N jours",
+    "day": "Jour",
+    "hour": "Heure",
+    "template": "Message (optionnel)",
+    "save": "Enregistrer",
+    "hint": "Heure d'Ouagadougou (GMT). Les clients avec un solde > 0 seront rappelés."
+  },
+  "billing": {
+    "title": "Abonnement",
+    "price": "2 000 FCFA / mois",
+    "trial": "Essai gratuit jusqu'au {date}",
+    "active": "Abonnement actif jusqu'au {date}",
+    "expired": "Essai terminé — activez votre abonnement",
+    "method": "Moyen de paiement",
+    "reference": "Référence / ID transaction",
+    "submit": "J'ai payé — envoyer la preuve",
+    "pending": "Preuve en attente de validation",
+    "payTo": "Envoyez 2 000 FCFA à :"
+  },
+  "admin": {
+    "title": "Preuves de paiement",
+    "approve": "Valider",
+    "reject": "Rejeter",
+    "empty": "Aucune preuve en attente"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "error": "Une erreur est survenue",
+    "back": "Retour"
+  },
+  "locales": {
+    "fr": "Français",
+    "dyu": "Dioula",
+    "mos": "Mooré"
+  }
+}

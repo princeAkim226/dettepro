@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+:root {
+  --navy: #0b1f3a;
+  --navy-mid: #123056;
+  --yellow: #f5c518;
+  --yellow-dim: #d4a017;
+  --ink: #f4f7fb;
+  --muted: #9bb0c9;
+  --danger: #ff5c5c;
+  --ok: #3dd68c;
+  --surface: #142a4a;
+  --line: rgba(245, 197, 24, 0.25);
+}
+
+@theme inline {
+  --color-navy: var(--navy);
+  --color-navy-mid: var(--navy-mid);
+  --color-yellow: var(--yellow);
+  --color-yellow-dim: var(--yellow-dim);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-danger: var(--danger);
+  --color-ok: var(--ok);
+  --color-surface: var(--surface);
+  --font-sans: var(--font-outfit);
+  --font-brand: var(--font-brand);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #1a3a66 0%, transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, #2a2100 0%, transparent 45%),
+    var(--navy);
+  color: var(--ink);
+  font-family: var(--font-outfit), system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+.brand {
+  font-family: var(--font-brand), sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--yellow);
+  color: var(--navy);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--yellow);
+  border: 1px solid var(--line);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.field label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.field textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.shell {
+  width: min(480px, 100%);
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: 1rem 1rem 5.5rem;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.stat {
+  background: linear-gradient(160deg, #1a3d6d, #0f2748);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(155, 176, 201, 0.15);
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(480px, 100%);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.25rem;
+  padding: 0.65rem 0.5rem calc(0.65rem + env(safe-area-inset-bottom));
+  background: rgba(11, 31, 58, 0.94);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line);
+}
+
+.bottom-nav a {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding: 0.35rem;
+}
+
+.bottom-nav a[data-active="true"] {
+  color: var(--yellow);
+  font-weight: 700;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(245, 197, 24, 0.15);
+  color: var(--yellow);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
