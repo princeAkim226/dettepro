@@ -1,5 +1,25 @@
 import { getEnv } from "@/lib/env";
 
+/** Transforme les erreurs brutes Meta en message lisible. */
+export function formatWhatsAppError(raw: string): string {
+  try {
+    const parsed = JSON.parse(raw) as {
+      error?: { message?: string; code?: number; error_user_msg?: string };
+    };
+    const code = parsed.error?.code;
+    const msg = parsed.error?.error_user_msg || parsed.error?.message || raw;
+    if (code === 190) {
+      return "Token WhatsApp expiré. Régénère un token dans Meta (Étape 1) et mets-le à jour dans Coolify.";
+    }
+    if (code === 131030 || code === 133010) {
+      return "Ce numéro n'est pas autorisé en test. Ajoute-le comme destinataire dans Meta.";
+    }
+    return msg;
+  } catch {
+    return raw.slice(0, 180);
+  }
+}
+
 export async function sendWhatsAppText(toPhone: string, body: string) {
   const env = getEnv();
   if (env.whatsappDryRun || !env.whatsappToken || !env.whatsappPhoneNumberId) {
@@ -23,7 +43,7 @@ export async function sendWhatsAppText(toPhone: string, body: string) {
   });
 
   if (!res.ok) {
-    const err = await res.text();
+    const err = formatWhatsAppError(await res.text());
     return { ok: false as const, error: err };
   }
   return { ok: true as const, dryRun: false };
@@ -49,7 +69,7 @@ export async function sendWhatsAppAudio(toPhone: string, audioBuffer: Buffer, fi
   });
 
   if (!uploadRes.ok) {
-    return { ok: false as const, error: await uploadRes.text() };
+    return { ok: false as const, error: formatWhatsAppError(await uploadRes.text()) };
   }
 
   const { id: mediaId } = (await uploadRes.json()) as { id: string };
@@ -69,7 +89,7 @@ export async function sendWhatsAppAudio(toPhone: string, audioBuffer: Buffer, fi
   });
 
   if (!msgRes.ok) {
-    return { ok: false as const, error: await msgRes.text() };
+    return { ok: false as const, error: formatWhatsAppError(await msgRes.text()) };
   }
   return { ok: true as const, dryRun: false };
 }
