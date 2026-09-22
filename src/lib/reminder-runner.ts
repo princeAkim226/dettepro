@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { customerBalance } from "@/lib/money";
 import { buildReminderMessage, isReminderDue } from "@/lib/reminders";
-import { sendWhatsAppAudio, sendWhatsAppText } from "@/lib/whatsapp";
+import { sendWhatsAppAudio, sendWhatsAppReminderText } from "@/lib/whatsapp";
 import { synthesizeSpeech } from "@/lib/tts";
 import { normalizePhone } from "@/lib/phone";
 import { getAccessStatus } from "@/lib/subscription";
@@ -53,7 +53,7 @@ export async function runReminderTick(now = new Date()) {
       for (const channel of channels) {
         try {
           if (channel === "text") {
-            const res = await sendWhatsAppText(phone, message);
+            const res = await sendWhatsAppReminderText(phone, message);
             await prisma.reminderLog.create({
               data: {
                 customerId: customer.id,
@@ -142,7 +142,7 @@ export async function sendReminderNow(opts: {
   let dryRun = false;
   for (const ch of channels) {
     if (ch === "text") {
-      const res = await sendWhatsAppText(phone, message);
+      const res = await sendWhatsAppReminderText(phone, message);
       dryRun = dryRun || res.dryRun === true;
       await prisma.reminderLog.create({
         data: {

@@ -20,13 +20,12 @@ export function formatWhatsAppError(raw: string): string {
   }
 }
 
-export async function sendWhatsAppText(toPhone: string, body: string) {
-  const env = getEnv();
-  if (env.whatsappDryRun || !env.whatsappToken || !env.whatsappPhoneNumberId) {
-    console.log(`[WA dry-run] TEXT → ${toPhone}: ${body}`);
-    return { ok: true as const, dryRun: true };
-  }
+type WaSendResult =
+  | { ok: true; dryRun: boolean; via: "template" | "text" }
+  | { ok: false; error: string };
 
+async function postWhatsAppMessage(payload: Record<string, unknown>): Promise<WaSendResult> {
+  const env = getEnv();
   const url = `https://graph.facebook.com/${env.whatsappApiVersion}/${env.whatsappPhoneNumberId}/messages`;
   try {
     const res = await fetch(url, {
@@ -37,27 +36,101 @@ export async function sendWhatsAppText(toPhone: string, body: string) {
       },
       body: JSON.stringify({
         messaging_product: "whatsapp",
-        to: toPhone.replace(/^\+/, ""),
-        type: "text",
-        text: { body },
+        ...payload,
       }),
     });
 
     if (!res.ok) {
-      const err = formatWhatsAppError(await res.text());
-      return { ok: false as const, error: err };
+      return { ok: false, error: formatWhatsAppError(await res.text()) };
     }
-    return { ok: true as const, dryRun: false };
+    const via = (payload.type === "template" ? "template" : "text") as
+      | "template"
+      | "text";
+    return { ok: true, dryRun: false, via };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return {
-      ok: false as const,
+      ok: false,
       error:
         msg === "fetch failed"
           ? "Impossible de joindre WhatsApp (réseau). Réessaie dans quelques secondes."
           : msg,
     };
   }
+}
+
+/** Texte libre — ne marche hors session que si le destinataire a écrit récemment. */
+export async function sendWhatsAppText(toPhone: string, body: string): Promise<WaSendResult> {
+  const env = getEnv();
+  if (env.whatsappDryRun || !env.whatsappToken || !env.whatsappPhoneNumberId) {
+    console.log(`[WA dry-run] TEXT → ${toPhone}: ${body}`);
+    return { ok: true, dryRun: true, via: "text" };
+  }
+
+  return postWhatsAppMessage({
+    to: toPhone.replace(/^\+/, ""),
+    type: "text",
+    text: { body },
+  });
+}
+
+/**
+ * Notif one-way via template utilitaire Meta (catégorie UTILITY).
+ * Le client n'a pas besoin de répondre — comme un SMS opérateur.
+ */
+export async function sendWhatsAppTemplate(
+  toPhone: string,
+  bodyParam: string,
+): Promise<WaSendResult> {
+  const env = getEnv();
+  if (env.whatsappDryRun || !env.whatsappToken || !env.whatsappPhoneNumberId) {
+    console.log(
+      `[WA dry-run] TEMPLATE ${env.whatsappTemplateName} → ${toPhone}: ${bodyParam}`,
+    );
+    return { ok: true, dryRun: true, via: "template" };
+  }
+
+  if (!env.whatsappTemplateName) {
+    return { ok: false, error: "Aucun template WhatsApp configuré." };
+  }
+
+  return postWhatsAppMessage({
+    to: toPhone.replace(/^\+/, ""),
+    type: "template",
+    template: {
+      name: env.whatsappTemplateName,
+      language: { code: env.whatsappTemplateLang },
+      components: [
+        {
+          type: "body",
+          parameters: [{ type: "text", text: bodyParam.slice(0, 1024) }],
+        },
+      ],
+    },
+  });
+}
+
+/**
+ * Rappel texte : priorise le template utilitaire (notif),
+ * sinon retombe sur texte libre (tests / fenêtre 24h).
+ */
+export async function sendWhatsAppReminderText(
+  toPhone: string,
+  body: string,
+): Promise<WaSendResult> {
+  const env = getEnv();
+  if (env.whatsappTemplateName) {
+    const tpl = await sendWhatsAppTemplate(toPhone, body);
+    if (tpl.ok) return tpl;
+    console.warn(`[WA] template failed, fallback text: ${tpl.error}`);
+    const text = await sendWhatsAppText(toPhone, body);
+    if (text.ok) return text;
+    return {
+      ok: false,
+      error: `Template: ${tpl.error} | Texte: ${text.error}`,
+    };
+  }
+  return sendWhatsAppText(toPhone, body);
 }
 
 export async function sendWhatsAppAudio(

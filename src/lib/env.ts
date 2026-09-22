@@ -31,6 +31,9 @@ export function getEnv() {
     whatsappToken: process.env.WHATSAPP_TOKEN ?? "",
     whatsappPhoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID ?? "",
     whatsappApiVersion: process.env.WHATSAPP_API_VERSION ?? "v21.0",
+    // Template utilitaire = notif one-way (comme SMS opérateur), sans conversation
+    whatsappTemplateName: process.env.WHATSAPP_TEMPLATE_NAME ?? "dettepro_rappel",
+    whatsappTemplateLang: process.env.WHATSAPP_TEMPLATE_LANG ?? "fr",
     ttsEnabled: process.env.TTS_ENABLED === "true",
     subscriptionAmount: 2000,
     trialDays: 7,
