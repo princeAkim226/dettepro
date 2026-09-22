@@ -101,6 +101,18 @@ export async function loginAction(formData: FormData) {
   return { ok: true, locale: user?.locale ?? "fr" };
 }
 
+export async function updateLocaleAction(locale: string) {
+  const parsed = z.enum(["fr", "dyu", "mos"]).safeParse(locale);
+  if (!parsed.success) return { error: "Langue invalide" };
+  const userId = await currentUserId();
+  await prisma.user.update({
+    where: { id: userId },
+    data: { locale: parsed.data },
+  });
+  revalidatePath("/", "layout");
+  return { ok: true as const, locale: parsed.data };
+}
+
 export async function createCustomerAction(formData: FormData) {
   const userId = await currentUserId();
   const name = String(formData.get("name") || "").trim();
