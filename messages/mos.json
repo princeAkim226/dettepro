@@ -80,7 +80,10 @@
     "payButton": "Will 2 000 FCFA",
     "payHint": "Will nonda, lebge ne tɩm référence.",
     "otherMethods": "Tɩre a taaba (Orange / Wave / Moov)",
-    "afterPay": "Mam saana — preuve tɩm"
+    "afterPay": "Mam saana — preuve tɩm",
+    "autoHint": "Will ne fo téléphone ({phone}). Abonnement na maan zĩiri — preuve ka to.",
+    "autoOk": "Will sũ — abonnement maan.",
+    "autoPending": "Will tõe la… Lebge page."
   },
   "admin": {
     "title": "Paiement preuves",

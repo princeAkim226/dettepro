@@ -80,7 +80,10 @@
     "payButton": "Payer 2 000 FCFA",
     "payHint": "Après le paiement, revenez ici et envoyez la preuve (référence / ID transaction).",
     "otherMethods": "Autres moyens (Orange / Wave / Moov)",
-    "afterPay": "J'ai payé — envoyer la preuve"
+    "afterPay": "J'ai payé — envoyer la preuve",
+    "autoHint": "Payez avec le même numéro que votre compte ({phone}). L'abonnement s'active tout seul après confirmation SasPay — pas besoin d'envoyer une preuve.",
+    "autoOk": "Paiement reçu — abonnement activé.",
+    "autoPending": "Paiement en cours de confirmation… Rafraîchis dans quelques secondes."
   },
   "admin": {
     "title": "Preuves de paiement",

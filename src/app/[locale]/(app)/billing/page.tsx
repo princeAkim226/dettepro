@@ -9,10 +9,13 @@ import { BillingProofForm } from "@/components/Forms";
 
 export default async function BillingPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ paid?: string }>;
 }) {
   const { locale } = await params;
+  const { paid } = await searchParams;
   setRequestLocale(locale);
   const user = await requireUser();
   const access = await getAccessStatus(user.id);
@@ -34,6 +37,8 @@ export default async function BillingPage({
     statusText = t("active", { date: format(active.endsAt, "d MMM yyyy", { locale: fr }) });
   }
 
+  const autoReady = Boolean(env.saspayWebhookSecret);
+
   return (
     <div>
       <h1 style={{ marginTop: 0 }}>{t("title")}</h1>
@@ -44,36 +49,48 @@ export default async function BillingPage({
         <p style={{ marginBottom: 0, color: "var(--muted)" }}>{statusText}</p>
       </div>
 
-      <p style={{ fontWeight: 700, marginBottom: "0.75rem" }}>{t("payVia")}</p>
-      <a
-        className="btn btn-primary"
-        href={env.paymentLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ display: "inline-flex", marginBottom: "1.25rem", textDecoration: "none" }}
-      >
-        {t("payButton")}
-      </a>
-      <p style={{ color: "var(--muted)", fontSize: "0.9rem", marginTop: 0 }}>
-        {t("payHint")}
-      </p>
+      {paid === "1" && access.ok && access.reason === "subscription" && (
+        <p style={{ color: "var(--ok)", fontWeight: 600 }}>{t("autoOk")}</p>
+      )}
+      {paid === "1" && !(access.ok && access.reason === "subscription") && (
+        <p style={{ color: "var(--yellow)" }}>{t("autoPending")}</p>
+      )}
 
-      <details style={{ marginBottom: "1.25rem", color: "var(--muted)" }}>
-        <summary style={{ cursor: "pointer" }}>{t("otherMethods")}</summary>
-        <ul style={{ paddingLeft: "1.1rem" }}>
-          <li>Orange Money : {env.paymentOrange}</li>
-          <li>Wave : {env.paymentWave}</li>
-          <li>Moov Money : {env.paymentMoov}</li>
-        </ul>
-      </details>
-
-      {pending ? (
-        <p className="badge">{t("pending")}</p>
-      ) : (
+      {!(access.ok && access.reason === "subscription") && (
         <>
-          <p style={{ fontWeight: 700 }}>{t("afterPay")}</p>
-          <BillingProofForm />
+          <p style={{ fontWeight: 700, marginBottom: "0.75rem" }}>{t("payVia")}</p>
+          <a
+            className="btn btn-primary"
+            href={env.paymentLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: "inline-flex", marginBottom: "0.75rem", textDecoration: "none" }}
+          >
+            {t("payButton")}
+          </a>
+          <p style={{ color: "var(--muted)", fontSize: "0.9rem" }}>
+            {autoReady ? t("autoHint", { phone: user.phone || "—" }) : t("payHint")}
+          </p>
         </>
+      )}
+
+      {!autoReady && (
+        <details style={{ marginTop: "1.25rem", marginBottom: "1.25rem" }}>
+          <summary style={{ cursor: "pointer", fontWeight: 600 }}>{t("afterPay")}</summary>
+          {pending ? (
+            <p className="badge">{t("pending")}</p>
+          ) : (
+            <div style={{ marginTop: "0.75rem" }}>
+              <BillingProofForm />
+            </div>
+          )}
+        </details>
+      )}
+
+      {autoReady && pending && (
+        <p className="badge" style={{ marginTop: "1rem" }}>
+          {t("pending")}
+        </p>
       )}
     </div>
   );

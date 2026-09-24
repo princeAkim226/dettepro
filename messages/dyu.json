@@ -80,7 +80,10 @@
     "payButton": "San 2 000 FCFA",
     "payHint": "San kɔ, i segin yan ka référence ci.",
     "otherMethods": "Cogo wɛrɛ (Orange / Wave / Moov)",
-    "afterPay": "N ye san — preuve ci"
+    "afterPay": "N ye san — preuve ci",
+    "autoHint": "I ka san ni i téléphone ye ({phone}). Abonnement bɛ i sɔrɔ yɛrɛyɛrɛ — preuve tɛ.",
+    "autoOk": "San sɔrɔla — abonnement bɛ baara la.",
+    "autoPending": "San makɛnɛya bɛ taa… I ka page yɛlɛma."
   },
   "admin": {
     "title": "Paiement preuves",

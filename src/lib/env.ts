@@ -29,6 +29,8 @@ export function getEnv() {
     paymentMoov: process.env.PAYMENT_MOOV ?? "À configurer",
     paymentLink:
       process.env.PAYMENT_LINK ?? "https://link.saspay.me/qxmnaayn608",
+    saspayWebhookSecret: process.env.SASPAY_WEBHOOK_SECRET ?? "",
+    saspayApiKey: process.env.SASPAY_API_KEY ?? "",
     whatsappDryRun: process.env.WHATSAPP_DRY_RUN !== "false",
     whatsappToken: process.env.WHATSAPP_TOKEN ?? "",
     whatsappPhoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID ?? "",
