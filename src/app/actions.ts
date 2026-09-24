@@ -235,7 +235,7 @@ export async function submitPaymentProofAction(formData: FormData) {
   const reference = String(formData.get("reference") || "").trim();
   const note = String(formData.get("note") || "").trim() || null;
 
-  if (!["ORANGE_MONEY", "WAVE", "MOOV"].includes(method)) {
+  if (!["SASPAY", "ORANGE_MONEY", "WAVE", "MOOV"].includes(method)) {
     return { error: "Moyen de paiement invalide" };
   }
   if (reference.length < 3) return { error: "Référence requise" };

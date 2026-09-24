@@ -75,7 +75,12 @@
     "reference": "Référence",
     "submit": "N ye san — preuve ci",
     "pending": "Preuve bɛ makɛnɛya la",
-    "payTo": "2 000 FCFA ci :"
+    "payTo": "2 000 FCFA ci :",
+    "payVia": "SasPay la san",
+    "payButton": "San 2 000 FCFA",
+    "payHint": "San kɔ, i segin yan ka référence ci.",
+    "otherMethods": "Cogo wɛrɛ (Orange / Wave / Moov)",
+    "afterPay": "N ye san — preuve ci"
   },
   "admin": {
     "title": "Paiement preuves",

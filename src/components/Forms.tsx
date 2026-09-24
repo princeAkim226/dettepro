@@ -287,7 +287,8 @@ export function BillingProofForm() {
     >
       <div className="field">
         <label htmlFor="method">{t("method")}</label>
-        <select id="method" name="method" required defaultValue="ORANGE_MONEY">
+        <select id="method" name="method" required defaultValue="SASPAY">
+          <option value="SASPAY">SasPay</option>
           <option value="ORANGE_MONEY">Orange Money</option>
           <option value="WAVE">Wave</option>
           <option value="MOOV">Moov Money</option>

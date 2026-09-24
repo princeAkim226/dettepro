@@ -44,17 +44,36 @@ export default async function BillingPage({
         <p style={{ marginBottom: 0, color: "var(--muted)" }}>{statusText}</p>
       </div>
 
-      <p style={{ fontWeight: 700 }}>{t("payTo")}</p>
-      <ul style={{ color: "var(--muted)", paddingLeft: "1.1rem" }}>
-        <li>Orange Money : {env.paymentOrange}</li>
-        <li>Wave : {env.paymentWave}</li>
-        <li>Moov Money : {env.paymentMoov}</li>
-      </ul>
+      <p style={{ fontWeight: 700, marginBottom: "0.75rem" }}>{t("payVia")}</p>
+      <a
+        className="btn btn-primary"
+        href={env.paymentLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ display: "inline-flex", marginBottom: "1.25rem", textDecoration: "none" }}
+      >
+        {t("payButton")}
+      </a>
+      <p style={{ color: "var(--muted)", fontSize: "0.9rem", marginTop: 0 }}>
+        {t("payHint")}
+      </p>
+
+      <details style={{ marginBottom: "1.25rem", color: "var(--muted)" }}>
+        <summary style={{ cursor: "pointer" }}>{t("otherMethods")}</summary>
+        <ul style={{ paddingLeft: "1.1rem" }}>
+          <li>Orange Money : {env.paymentOrange}</li>
+          <li>Wave : {env.paymentWave}</li>
+          <li>Moov Money : {env.paymentMoov}</li>
+        </ul>
+      </details>
 
       {pending ? (
         <p className="badge">{t("pending")}</p>
       ) : (
-        <BillingProofForm />
+        <>
+          <p style={{ fontWeight: 700 }}>{t("afterPay")}</p>
+          <BillingProofForm />
+        </>
       )}
     </div>
   );

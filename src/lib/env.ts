@@ -27,6 +27,8 @@ export function getEnv() {
     paymentOrange: process.env.PAYMENT_ORANGE_MONEY ?? "À configurer",
     paymentWave: process.env.PAYMENT_WAVE ?? "À configurer",
     paymentMoov: process.env.PAYMENT_MOOV ?? "À configurer",
+    paymentLink:
+      process.env.PAYMENT_LINK ?? "https://link.saspay.me/qxmnaayn608",
     whatsappDryRun: process.env.WHATSAPP_DRY_RUN !== "false",
     whatsappToken: process.env.WHATSAPP_TOKEN ?? "",
     whatsappPhoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID ?? "",

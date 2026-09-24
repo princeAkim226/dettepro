@@ -75,7 +75,12 @@
     "reference": "Référence / ID transaction",
     "submit": "J'ai payé — envoyer la preuve",
     "pending": "Preuve en attente de validation",
-    "payTo": "Envoyez 2 000 FCFA à :"
+    "payTo": "Envoyez 2 000 FCFA à :",
+    "payVia": "Payer en ligne (SasPay)",
+    "payButton": "Payer 2 000 FCFA",
+    "payHint": "Après le paiement, revenez ici et envoyez la preuve (référence / ID transaction).",
+    "otherMethods": "Autres moyens (Orange / Wave / Moov)",
+    "afterPay": "J'ai payé — envoyer la preuve"
   },
   "admin": {
     "title": "Preuves de paiement",
