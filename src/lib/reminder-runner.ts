@@ -143,7 +143,7 @@ export async function sendReminderNow(opts: {
   for (const ch of channels) {
     if (ch === "text") {
       const res = await sendWhatsAppReminderText(phone, message);
-      dryRun = dryRun || res.dryRun === true;
+      if (res.ok && res.dryRun) dryRun = true;
       await prisma.reminderLog.create({
         data: {
           customerId: customer.id,
@@ -161,7 +161,7 @@ export async function sendReminderNow(opts: {
         filename: audio.filename,
         contentType: audio.contentType,
       });
-      dryRun = dryRun || res.dryRun === true;
+      if (res.ok && res.dryRun) dryRun = true;
       await prisma.reminderLog.create({
         data: {
           customerId: customer.id,
