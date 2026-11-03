@@ -12,6 +12,12 @@ export function phoneToAuthEmail(phone: string): string {
   return `${n}@users.dettepro.local`;
 }
 
+export function whatsappLink(phone: string, text?: string): string {
+  const digits = normalizePhone(phone).replace(/\D/g, "");
+  const query = text ? `?text=${encodeURIComponent(text)}` : "";
+  return `https://wa.me/${digits}${query}`;
+}
+
 export function displayPhone(phone: string): string {
   const n = normalizePhone(phone);
   if (n.startsWith("+226") && n.length === 12) {

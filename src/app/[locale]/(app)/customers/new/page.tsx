@@ -1,5 +1,5 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { NewCustomerForm } from "@/components/Forms";
+import { CustomerForm } from "@/components/Forms";
 import { Link } from "@/i18n/navigation";
 import { guardAccess } from "@/lib/guards";
 
@@ -15,11 +15,11 @@ export default async function NewCustomerPage({
 
   return (
     <div>
-      <Link href="/dashboard" style={{ color: "var(--muted)" }}>
+      <Link href="/customers" style={{ color: "var(--muted)" }}>
         ← {t("common.back")}
       </Link>
       <h1 style={{ margin: "1rem 0" }}>{t("dashboard.addCustomer")}</h1>
-      <NewCustomerForm />
+      <CustomerForm />
     </div>
   );
 }
