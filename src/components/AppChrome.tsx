@@ -12,7 +12,7 @@ export function BottomNav({ isAdmin }: { isAdmin?: boolean }) {
 
   const items = [
     { href: "/dashboard", label: t("dashboard") },
-    { href: "/customers/new", label: t("customers") },
+    { href: "/customers", label: t("customers") },
     { href: "/reminders", label: t("reminders") },
     { href: isAdmin ? "/admin" : "/billing", label: isAdmin ? t("admin") : t("billing") },
   ] as const;
@@ -64,6 +64,8 @@ export function LocaleSwitcher() {
 }
 
 export function LogoutButton({ label }: { label: string }) {
+  const locale = useLocale();
+
   return (
     <button
       type="button"
@@ -73,7 +75,7 @@ export function LogoutButton({ label }: { label: string }) {
         authClient.signOut({
           fetchOptions: {
             onSuccess: () => {
-              window.location.href = "/fr";
+              window.location.href = `/${locale}`;
             },
           },
         })

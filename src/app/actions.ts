@@ -18,6 +18,26 @@ async function currentUserId() {
   return session.user.id;
 }
 
+const REMINDER_USER_ERRORS = ["Client sans numéro WhatsApp", "Ce client n'a pas de dette"];
+
+const PAID_MORE_THAN_DEBTS =
+  "Ce client a déjà payé plus que ce montant. Corrige d'abord ses paiements.";
+
+/** Solde non borné à 0, pour vérifier qu'une correction ne le rend pas négatif. */
+function rawBalance(customer: { debts: { amount: number }[]; payments: { amount: number }[] }) {
+  return (
+    customer.debts.reduce((s, d) => s + d.amount, 0) -
+    customer.payments.reduce((s, p) => s + p.amount, 0)
+  );
+}
+
+function findOwnedDebt(id: string, userId: string) {
+  return prisma.debt.findFirst({
+    where: { id, customer: { userId } },
+    include: { customer: { include: { debts: true, payments: true } } },
+  });
+}
+
 export async function registerAction(formData: FormData) {
   const schema = z.object({
     name: z.string().min(2),
@@ -164,14 +184,106 @@ export async function addPaymentAction(formData: FormData) {
   });
   if (!customer) return { error: "Client introuvable" };
 
-  const balance =
-    customer.debts.reduce((s, d) => s + d.amount, 0) -
-    customer.payments.reduce((s, p) => s + p.amount, 0);
-  if (amount > balance) return { error: "Le paiement dépasse le solde" };
+  if (amount > rawBalance(customer)) return { error: "Le paiement dépasse le solde" };
 
   await prisma.payment.create({
     data: { customerId, amount, note },
   });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function updateCustomerAction(formData: FormData) {
+  const userId = await currentUserId();
+  const id = String(formData.get("customerId") || "");
+  const name = String(formData.get("name") || "").trim();
+  const phoneRaw = String(formData.get("phone") || "").trim();
+  const notes = String(formData.get("notes") || "").trim() || null;
+  if (name.length < 2) return { error: "Nom requis" };
+
+  const customer = await prisma.customer.findFirst({ where: { id, userId } });
+  if (!customer) return { error: "Client introuvable" };
+
+  await prisma.customer.update({
+    where: { id },
+    data: {
+      name,
+      phone: phoneRaw ? normalizePhone(phoneRaw) : null,
+      notes,
+    },
+  });
+  revalidatePath("/", "layout");
+  return { ok: true, id };
+}
+
+export async function deleteCustomerAction(id: string) {
+  const userId = await currentUserId();
+  const customer = await prisma.customer.findFirst({ where: { id, userId } });
+  if (!customer) return { error: "Client introuvable" };
+
+  await prisma.customer.delete({ where: { id } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function updateDebtAction(formData: FormData) {
+  const userId = await currentUserId();
+  const id = String(formData.get("entryId") || "");
+  const amount = parseAmount(String(formData.get("amount") || ""));
+  const reason = String(formData.get("reason") || "").trim() || null;
+  if (!amount) return { error: "Montant invalide" };
+
+  const debt = await findOwnedDebt(id, userId);
+  if (!debt) return { error: "Dette introuvable" };
+  if (rawBalance(debt.customer) - debt.amount + amount < 0) {
+    return { error: PAID_MORE_THAN_DEBTS };
+  }
+
+  await prisma.debt.update({ where: { id }, data: { amount, reason } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function deleteDebtAction(id: string) {
+  const userId = await currentUserId();
+  const debt = await findOwnedDebt(id, userId);
+  if (!debt) return { error: "Dette introuvable" };
+  if (rawBalance(debt.customer) - debt.amount < 0) {
+    return { error: PAID_MORE_THAN_DEBTS };
+  }
+
+  await prisma.debt.delete({ where: { id } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function updatePaymentAction(formData: FormData) {
+  const userId = await currentUserId();
+  const id = String(formData.get("entryId") || "");
+  const amount = parseAmount(String(formData.get("amount") || ""));
+  const note = String(formData.get("note") || "").trim() || null;
+  if (!amount) return { error: "Montant invalide" };
+
+  const payment = await prisma.payment.findFirst({
+    where: { id, customer: { userId } },
+    include: { customer: { include: { debts: true, payments: true } } },
+  });
+  if (!payment) return { error: "Paiement introuvable" };
+  if (amount > rawBalance(payment.customer) + payment.amount) {
+    return { error: "Le paiement dépasse le solde" };
+  }
+
+  await prisma.payment.update({ where: { id }, data: { amount, note } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function deletePaymentAction(id: string) {
+  const userId = await currentUserId();
+  const payment = await prisma.payment.findFirst({ where: { id, customer: { userId } } });
+  if (!payment) return { error: "Paiement introuvable" };
+
+  await prisma.payment.delete({ where: { id } });
   revalidatePath("/", "layout");
   return { ok: true };
 }
@@ -225,7 +337,10 @@ export async function remindNowAction(customerId: string) {
       message: result.message,
     };
   } catch (e) {
-    return { error: e instanceof Error ? e.message : "Échec du rappel" };
+    const message = e instanceof Error ? e.message : "";
+    if (REMINDER_USER_ERRORS.includes(message)) return { error: message };
+    console.error("[remind-now] failed:", e);
+    return { error: "Le rappel n'a pas pu partir. Réessaie ou utilise le bouton WhatsApp." };
   }
 }
 

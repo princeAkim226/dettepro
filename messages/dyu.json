@@ -31,7 +31,10 @@
     "customers": "Clients",
     "addCustomer": "Client kura",
     "empty": "Client si tɛ yen.",
-    "owes": "ka san"
+    "owes": "ka san",
+    "priority": "À relancer en priorité",
+    "seeAll": "Voir tous les clients",
+    "allPaid": "Tout le monde est à jour."
   },
   "customer": {
     "balance": "Solde",
@@ -46,7 +49,30 @@
     "note": "Note",
     "save": "Marayali",
     "phone": "WhatsApp",
-    "notes": "Notes"
+    "notes": "Notes",
+    "name": "Nom",
+    "edit": "Modifier",
+    "editCustomer": "Modifier le client",
+    "editDebt": "Modifier la dette",
+    "editPayment": "Modifier le paiement",
+    "call": "Appeler",
+    "whatsapp": "WhatsApp",
+    "noPhone": "Ajoute un numéro pour appeler ou relancer ce client.",
+    "addPhone": "Ajouter un numéro",
+    "remindPreview": "Message qui sera envoyé à {name} :",
+    "remindSend": "Envoyer le rappel",
+    "remindSent": "Rappel envoyé sur WhatsApp.",
+    "remindDisabled": "L'envoi automatique est désactivé : le message n'est pas parti. Utilise le bouton WhatsApp.",
+    "historyHint": "Touche une ligne pour la corriger.",
+    "due": "Ce client doit {amount}",
+    "nothingDue": "Ce client n'a rien à payer.",
+    "balanceAfter": "Solde après : {amount}",
+    "payAll": "Tout",
+    "overpay": "Le paiement dépasse le solde",
+    "delete": "Supprimer",
+    "deleteConfirm": "Oui, supprimer",
+    "deleteCustomerMessage": "Supprimer {name} et tout son historique ? C'est définitif.",
+    "deleteEntryMessage": "Supprimer cette ligne ? Le solde sera recalculé."
   },
   "reminders": {
     "title": "Rappels automatiques",
@@ -94,11 +120,24 @@
   "common": {
     "loading": "A bɛ taa…",
     "error": "Fili bɛ yen",
-    "back": "Segin"
+    "back": "Segin",
+    "cancel": "Annuler"
   },
   "locales": {
     "fr": "Français",
     "dyu": "Dioula",
     "mos": "Mooré"
+  },
+  "customers": {
+    "title": "Clients",
+    "search": "Chercher un nom ou un numéro",
+    "sort": "Trier par",
+    "sortAmount": "Montant le plus élevé",
+    "sortOldest": "Dette la plus ancienne",
+    "sortName": "Nom (A-Z)",
+    "noResult": "Aucun client trouvé.",
+    "upToDate": "À jour",
+    "since": "depuis {days} j",
+    "today": "aujourd'hui"
   }
 }

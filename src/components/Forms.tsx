@@ -3,17 +3,115 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { formatFcfa, MAX_AMOUNT } from "@/lib/money";
 import {
   createCustomerAction,
+  updateCustomerAction,
+  deleteCustomerAction,
   addDebtAction,
+  updateDebtAction,
+  deleteDebtAction,
   addPaymentAction,
+  updatePaymentAction,
+  deletePaymentAction,
   remindNowAction,
   saveReminderSettingsAction,
   submitPaymentProofAction,
   reviewPaymentProofAction,
 } from "@/app/actions";
 
-export function NewCustomerForm() {
+const QUICK_AMOUNTS = [500, 1000, 5000, 10000];
+const amountFormat = new Intl.NumberFormat("fr-FR");
+
+function AmountField({
+  label,
+  value,
+  onChange,
+  children,
+}: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="field">
+      <label htmlFor="amount">{label}</label>
+      <input
+        id="amount"
+        name="amount"
+        inputMode="numeric"
+        autoComplete="off"
+        required
+        placeholder="0"
+        value={value ? amountFormat.format(value) : ""}
+        onChange={(e) => {
+          const next = Number(e.target.value.replace(/\D/g, ""));
+          if (next <= MAX_AMOUNT) onChange(next);
+        }}
+      />
+      <div className="chips">
+        {QUICK_AMOUNTS.map((amount) => (
+          <button
+            key={amount}
+            type="button"
+            className="chip"
+            onClick={() => onChange(Math.min(value + amount, MAX_AMOUNT))}
+          >
+            +{amountFormat.format(amount)}
+          </button>
+        ))}
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function ConfirmPanel({
+  message,
+  preview,
+  confirmLabel,
+  danger,
+  pending,
+  onConfirm,
+  onCancel,
+}: {
+  message: string;
+  preview?: string;
+  confirmLabel: string;
+  danger?: boolean;
+  pending: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const tc = useTranslations("common");
+
+  return (
+    <div className="confirm-panel" role="alertdialog" aria-label={message}>
+      <p style={{ margin: 0 }}>{message}</p>
+      {preview && <blockquote className="message-preview">{preview}</blockquote>}
+      <div className="btn-row">
+        <button type="button" className="btn btn-ghost" disabled={pending} onClick={onCancel}>
+          {tc("cancel")}
+        </button>
+        <button
+          type="button"
+          className={danger ? "btn btn-danger" : "btn btn-primary"}
+          disabled={pending}
+          onClick={onConfirm}
+        >
+          {pending ? tc("loading") : confirmLabel}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function CustomerForm({
+  initial,
+}: {
+  initial?: { id: string; name: string; phone: string; notes: string };
+}) {
   const t = useTranslations("customer");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -24,24 +122,32 @@ export function NewCustomerForm() {
     <form
       className="flex flex-col gap-4"
       action={(fd) => {
+        if (initial) fd.set("customerId", initial.id);
         start(async () => {
-          const res = await createCustomerAction(fd);
+          setError(null);
+          const res = initial ? await updateCustomerAction(fd) : await createCustomerAction(fd);
           if (res.error) setError(res.error);
-          else if (res.id) router.push(`/customers/${res.id}`);
+          else if (res.id) router.replace(`/customers/${res.id}`);
         });
       }}
     >
       <div className="field">
-        <label htmlFor="name">Nom</label>
-        <input id="name" name="name" required minLength={2} />
+        <label htmlFor="name">{t("name")}</label>
+        <input id="name" name="name" required minLength={2} defaultValue={initial?.name} />
       </div>
       <div className="field">
         <label htmlFor="phone">{t("phone")}</label>
-        <input id="phone" name="phone" inputMode="tel" placeholder="70 00 00 00" />
+        <input
+          id="phone"
+          name="phone"
+          inputMode="tel"
+          placeholder="70 00 00 00"
+          defaultValue={initial?.phone}
+        />
       </div>
       <div className="field">
         <label htmlFor="notes">{t("notes")}</label>
-        <textarea id="notes" name="notes" />
+        <textarea id="notes" name="notes" defaultValue={initial?.notes} />
       </div>
       {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
       <button className="btn btn-primary" disabled={pending}>
@@ -51,32 +157,44 @@ export function NewCustomerForm() {
   );
 }
 
-export function DebtForm({ customerId }: { customerId: string }) {
+export function DebtForm({
+  customerId,
+  balance,
+  initial,
+}: {
+  customerId: string;
+  balance: number;
+  initial?: { id: string; amount: number; reason: string };
+}) {
   const t = useTranslations("customer");
   const tc = useTranslations("common");
   const router = useRouter();
+  const [amount, setAmount] = useState(initial?.amount ?? 0);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  const balanceWithoutEntry = balance - (initial?.amount ?? 0);
 
   return (
     <form
       className="flex flex-col gap-4"
       action={(fd) => {
         fd.set("customerId", customerId);
+        if (initial) fd.set("entryId", initial.id);
         start(async () => {
-          const res = await addDebtAction(fd);
+          setError(null);
+          const res = initial ? await updateDebtAction(fd) : await addDebtAction(fd);
           if (res.error) setError(res.error);
-          else router.push(`/customers/${customerId}`);
+          else router.replace(`/customers/${customerId}`);
         });
       }}
     >
-      <div className="field">
-        <label htmlFor="amount">{t("amount")}</label>
-        <input id="amount" name="amount" inputMode="numeric" required placeholder="5000" />
-      </div>
+      <AmountField label={t("amount")} value={amount} onChange={setAmount} />
+      <p className="balance-after">
+        {t("balanceAfter", { amount: formatFcfa(Math.max(0, balanceWithoutEntry + amount)) })}
+      </p>
       <div className="field">
         <label htmlFor="reason">{t("reason")}</label>
-        <input id="reason" name="reason" placeholder="Sac de riz" />
+        <input id="reason" name="reason" placeholder="Sac de riz" defaultValue={initial?.reason} />
       </div>
       {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
       <button className="btn btn-primary" disabled={pending}>
@@ -86,67 +204,201 @@ export function DebtForm({ customerId }: { customerId: string }) {
   );
 }
 
-export function PaymentForm({ customerId }: { customerId: string }) {
+export function PaymentForm({
+  customerId,
+  balance,
+  initial,
+}: {
+  customerId: string;
+  balance: number;
+  initial?: { id: string; amount: number; note: string };
+}) {
   const t = useTranslations("customer");
   const tc = useTranslations("common");
   const router = useRouter();
+  const [amount, setAmount] = useState(initial?.amount ?? 0);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  const due = balance + (initial?.amount ?? 0);
+  const overpaid = amount > due;
 
   return (
     <form
       className="flex flex-col gap-4"
       action={(fd) => {
         fd.set("customerId", customerId);
+        if (initial) fd.set("entryId", initial.id);
         start(async () => {
-          const res = await addPaymentAction(fd);
+          setError(null);
+          const res = initial ? await updatePaymentAction(fd) : await addPaymentAction(fd);
           if (res.error) setError(res.error);
-          else router.push(`/customers/${customerId}`);
+          else router.replace(`/customers/${customerId}`);
         });
       }}
     >
-      <div className="field">
-        <label htmlFor="amount">{t("amount")}</label>
-        <input id="amount" name="amount" inputMode="numeric" required />
-      </div>
+      <p className="balance-after" style={{ fontWeight: 700 }}>
+        {due > 0 ? t("due", { amount: formatFcfa(due) }) : t("nothingDue")}
+      </p>
+      <AmountField label={t("amount")} value={amount} onChange={setAmount}>
+        {due > 0 && (
+          <button type="button" className="chip chip-strong" onClick={() => setAmount(due)}>
+            {t("payAll")}
+          </button>
+        )}
+      </AmountField>
+      {overpaid ? (
+        <p style={{ color: "var(--danger)", margin: 0 }}>{t("overpay")}</p>
+      ) : (
+        <p className="balance-after">
+          {t("balanceAfter", { amount: formatFcfa(due - amount) })}
+        </p>
+      )}
       <div className="field">
         <label htmlFor="note">{t("note")}</label>
-        <input id="note" name="note" />
+        <input id="note" name="note" defaultValue={initial?.note} />
       </div>
       {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
-      <button className="btn btn-primary" disabled={pending}>
+      <button className="btn btn-primary" disabled={pending || overpaid || due === 0}>
         {pending ? tc("loading") : t("save")}
       </button>
     </form>
   );
 }
 
-export function RemindButton({ customerId, label }: { customerId: string; label: string }) {
-  const [msg, setMsg] = useState<string | null>(null);
+function DeleteButton({
+  message,
+  run,
+  onDone,
+}: {
+  message: string;
+  run: () => Promise<{ error?: string }>;
+  onDone: () => void;
+}) {
+  const t = useTranslations("customer");
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, start] = useTransition();
+
+  return (
+    <div style={{ marginTop: "1.5rem" }}>
+      {open ? (
+        <ConfirmPanel
+          message={message}
+          confirmLabel={t("deleteConfirm")}
+          danger
+          pending={pending}
+          onCancel={() => setOpen(false)}
+          onConfirm={() =>
+            start(async () => {
+              setError(null);
+              const res = await run();
+              if (res.error) {
+                setError(res.error);
+                setOpen(false);
+              } else {
+                onDone();
+              }
+            })
+          }
+        />
+      ) : (
+        <button
+          type="button"
+          className="btn btn-ghost btn-ghost-danger"
+          style={{ width: "100%" }}
+          onClick={() => setOpen(true)}
+        >
+          {t("delete")}
+        </button>
+      )}
+      {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
+    </div>
+  );
+}
+
+export function DeleteCustomerButton({ customerId, name }: { customerId: string; name: string }) {
+  const t = useTranslations("customer");
+  const router = useRouter();
+
+  return (
+    <DeleteButton
+      message={t("deleteCustomerMessage", { name })}
+      run={() => deleteCustomerAction(customerId)}
+      onDone={() => router.replace("/customers")}
+    />
+  );
+}
+
+export function DeleteEntryButton({
+  kind,
+  entryId,
+  customerId,
+}: {
+  kind: "debt" | "payment";
+  entryId: string;
+  customerId: string;
+}) {
+  const t = useTranslations("customer");
+  const router = useRouter();
+
+  return (
+    <DeleteButton
+      message={t("deleteEntryMessage")}
+      run={() => (kind === "debt" ? deleteDebtAction(entryId) : deletePaymentAction(entryId))}
+      onDone={() => router.replace(`/customers/${customerId}`)}
+    />
+  );
+}
+
+export function RemindButton({
+  customerId,
+  name,
+  preview,
+}: {
+  customerId: string;
+  name: string;
+  preview: string;
+}) {
+  const t = useTranslations("customer");
+  const [open, setOpen] = useState(false);
+  const [result, setResult] = useState<{ text: string; color: string } | null>(null);
   const [pending, start] = useTransition();
 
   return (
     <div>
-      <button
-        type="button"
-        className="btn btn-ghost"
-        style={{ width: "100%" }}
-        disabled={pending}
-        onClick={() =>
-          start(async () => {
-            setMsg(null);
-            const res = await remindNowAction(customerId);
-            if (res.error) setMsg(res.error);
-            else if (res.dryRun) setMsg("Simulation uniquement (dry-run) — pas d'envoi réel");
-            else setMsg("Envoyé (texte + vocal si dispo). Regarde WhatsApp (+1 555-…).");
-          })
-        }
-      >
-        {label}
-      </button>
-      {msg && (
-        <p style={{ color: msg === "OK" ? "var(--ok)" : "var(--danger)", fontSize: "0.85rem" }}>
-          {msg}
+      {open ? (
+        <ConfirmPanel
+          message={t("remindPreview", { name })}
+          preview={preview}
+          confirmLabel={t("remindSend")}
+          pending={pending}
+          onCancel={() => setOpen(false)}
+          onConfirm={() =>
+            start(async () => {
+              const res = await remindNowAction(customerId);
+              if (res.error) setResult({ text: res.error, color: "var(--danger)" });
+              else if (res.dryRun) setResult({ text: t("remindDisabled"), color: "var(--yellow)" });
+              else setResult({ text: t("remindSent"), color: "var(--ok)" });
+              setOpen(false);
+            })
+          }
+        />
+      ) : (
+        <button
+          type="button"
+          className="btn btn-ghost"
+          style={{ width: "100%" }}
+          onClick={() => {
+            setResult(null);
+            setOpen(true);
+          }}
+        >
+          {t("remind")}
+        </button>
+      )}
+      {result && (
+        <p role="status" style={{ color: result.color, fontSize: "0.85rem" }}>
+          {result.text}
         </p>
       )}
     </div>
