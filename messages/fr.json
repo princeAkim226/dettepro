@@ -84,12 +84,24 @@
     "frequency": "Fréquence",
     "daily": "Chaque jour",
     "weekly": "Chaque semaine",
-    "everyN": "Tous les N jours",
+    "everyN": "Tous les X jours",
     "day": "Jour",
-    "hour": "Heure",
-    "template": "Message (optionnel)",
+    "hour": "Heure d'envoi",
+    "template": "Message personnalisé (optionnel)",
     "save": "Enregistrer",
-    "hint": "Heure d'Ouagadougou (GMT). Les clients avec un solde > 0 seront rappelés."
+    "hint": "Heure de Ouagadougou. Seuls les clients avec une dette et un numéro reçoivent le rappel.",
+    "everyNLabel": "Tous les combien de jours ?",
+    "templateHint": "Laisse vide pour le message par défaut. Ces mots sont remplacés automatiquement (client, montant, boutique) : {vars}",
+    "saved": "Réglages enregistrés.",
+    "days": {
+      "0": "Dimanche",
+      "1": "Lundi",
+      "2": "Mardi",
+      "3": "Mercredi",
+      "4": "Jeudi",
+      "5": "Vendredi",
+      "6": "Samedi"
+    }
   },
   "billing": {
     "title": "Abonnement",

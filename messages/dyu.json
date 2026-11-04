@@ -89,7 +89,19 @@
     "hour": "Lɛrɛ",
     "template": "Message (si taa)",
     "save": "Marayali",
-    "hint": "Ouagadougou lɛrɛ (GMT)."
+    "hint": "Ouagadougou lɛrɛ (GMT).",
+    "everyNLabel": "Tous les combien de jours ?",
+    "templateHint": "Laisse vide pour le message par défaut. Ces mots sont remplacés automatiquement (client, montant, boutique) : {vars}",
+    "saved": "Réglages enregistrés.",
+    "days": {
+      "0": "Dimanche",
+      "1": "Lundi",
+      "2": "Mardi",
+      "3": "Mercredi",
+      "4": "Jeudi",
+      "5": "Vendredi",
+      "6": "Samedi"
+    }
   },
   "billing": {
     "title": "Abonnement",
