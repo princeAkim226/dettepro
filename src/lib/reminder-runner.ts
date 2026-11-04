@@ -15,6 +15,16 @@ function resolveChannels(channel: string): Array<"text" | "voice"> {
   return voiceOk ? ["text", "voice"] : ["text"];
 }
 
+function logFields(
+  res: { ok: true; dryRun: boolean; messageId?: string } | { ok: false; error: string },
+) {
+  if (!res.ok) return { status: "failed", error: res.error };
+  return {
+    status: res.dryRun ? "simulated" : "sent",
+    providerMessageId: res.messageId ?? null,
+  };
+}
+
 export async function runReminderTick(now = new Date()) {
   const settingsList = await prisma.reminderSettings.findMany({
     where: { enabled: true },
@@ -59,9 +69,8 @@ export async function runReminderTick(now = new Date()) {
                 customerId: customer.id,
                 userId: settings.userId,
                 channel: "text",
-                status: res.ok ? "sent" : "failed",
+                ...logFields(res),
                 message,
-                error: res.ok ? null : res.error,
               },
             });
             if (res.ok) sent++;
@@ -76,9 +85,8 @@ export async function runReminderTick(now = new Date()) {
                 customerId: customer.id,
                 userId: settings.userId,
                 channel: "voice",
-                status: res.ok ? "sent" : "failed",
+                ...logFields(res),
                 message,
-                error: res.ok ? null : res.error,
               },
             });
             if (res.ok) sent++;
@@ -149,9 +157,8 @@ export async function sendReminderNow(opts: {
           customerId: customer.id,
           userId: user.id,
           channel: "text",
-          status: res.ok ? "sent" : "failed",
+          ...logFields(res),
           message,
-          error: res.ok ? null : res.error,
         },
       });
       if (!res.ok) throw new Error(res.error);
@@ -167,9 +174,8 @@ export async function sendReminderNow(opts: {
           customerId: customer.id,
           userId: user.id,
           channel: "voice",
-          status: res.ok ? "sent" : "failed",
+          ...logFields(res),
           message,
-          error: res.ok ? null : res.error,
         },
       });
       // Vocal en bonus : on ne fait pas échouer le rappel si le texte a déjà marché

@@ -81,6 +81,8 @@ L’app / le worker refusent de démarrer si manquent :
 
 WhatsApp : laisser `WHATSAPP_DRY_RUN=true` jusqu’à configuration Meta.
 
+Suivi de livraison des rappels : renseigner `WHATSAPP_APP_SECRET` (clé secrète de l’app Meta) sur l’app, puis abonner le webhook `https://dettepro.raaga-bf.com/api/whatsapp/webhook` au champ `messages` dans Meta. Sans cette clé, les statuts sont ignorés et les rappels restent « livraison non confirmée ».
+
 ## Sauvegarde
 
 Le script nocturne actuel ne couvre que Supabase/Voltify. Ajouter un dump `dettepro`, par ex. :

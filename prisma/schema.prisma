@@ -177,6 +177,9 @@ model ReminderLog {
   status     String
   message    String?
   error      String?
+  // Identifiant Meta (wamid) : relie les statuts du webhook au message envoyé
+  providerMessageId String? @unique
+  failureReason     String?
   createdAt  DateTime @default(now())
 
   @@index([userId])

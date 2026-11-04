@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getEnv } from "@/lib/env";
+import { applyMetaStatuses, isValidMetaSignature } from "@/lib/reminder-status";
 
 /**
  * Webhook Meta WhatsApp — obligatoire pour passer en production.
  * GET  = vérification Meta (challenge)
- * POST = accusés de réception / statuts (on ignore le contenu, on répond 200)
+ * POST = statuts de livraison (les réponses des clients sont ignorées)
  */
 export async function GET(req: NextRequest) {
   const mode = req.nextUrl.searchParams.get("hub.mode");
@@ -20,11 +21,24 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    // Accusé rapide — Meta exige < 20s. On ne traite pas les replies pour l'instant.
-    await req.json().catch(() => null);
-  } catch {
-    /* ignore */
+  const secret = getEnv().whatsappAppSecret;
+  if (!secret) {
+    console.warn("[whatsapp-webhook] WHATSAPP_APP_SECRET absent : statuts ignorés");
+    return NextResponse.json({ ok: true });
   }
+
+  const rawBody = await req.text();
+  if (!isValidMetaSignature(rawBody, req.headers.get("x-hub-signature-256"), secret)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  let payload: unknown;
+  try {
+    payload = JSON.parse(rawBody);
+  } catch {
+    return NextResponse.json({ ok: true });
+  }
+
+  await applyMetaStatuses(payload);
   return NextResponse.json({ ok: true });
 }

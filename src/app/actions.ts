@@ -331,6 +331,7 @@ export async function remindNowAction(customerId: string) {
   const userId = await currentUserId();
   try {
     const result = await sendReminderNow({ userId, customerId, channel: "both" });
+    revalidatePath("/", "layout");
     return {
       ok: true,
       dryRun: result.dryRun === true,

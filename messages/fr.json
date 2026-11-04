@@ -61,7 +61,7 @@
     "addPhone": "Ajouter un numéro",
     "remindPreview": "Message qui sera envoyé à {name} :",
     "remindSend": "Envoyer le rappel",
-    "remindSent": "Rappel envoyé sur WhatsApp.",
+    "remindSent": "Message transmis à WhatsApp. Regarde « Derniers rappels » pour savoir s'il est livré.",
     "remindDisabled": "L'envoi automatique est désactivé : le message n'est pas parti. Utilise le bouton WhatsApp.",
     "historyHint": "Touche une ligne pour la corriger.",
     "due": "Ce client doit {amount}",
@@ -139,5 +139,25 @@
     "upToDate": "À jour",
     "since": "depuis {days} j",
     "today": "aujourd'hui"
+  },
+  "reminderLog": {
+    "title": "Derniers rappels",
+    "empty": "Aucun rappel pour l'instant.",
+    "text": "Texte",
+    "voice": "Vocal",
+    "status": {
+      "sent": "Transmis, livraison non confirmée",
+      "unconfirmed": "Envoi non confirmé",
+      "delivered": "Livré",
+      "read": "Lu",
+      "failed": "Non livré",
+      "simulated": "Simulé, rien n'est parti"
+    },
+    "reason": {
+      "window": "Le client ne t'a pas écrit depuis 24 h : WhatsApp a bloqué ce message. Utilise le bouton WhatsApp.",
+      "undeliverable": "Ce numéro n'a pas WhatsApp ou ne peut pas recevoir ce message. Vérifie le numéro.",
+      "limited": "WhatsApp a limité l'envoi vers ce numéro. Réessaie plus tard ou utilise le bouton WhatsApp.",
+      "other": "WhatsApp n'a pas pu livrer ce message. Réessaie ou utilise le bouton WhatsApp."
+    }
   }
 }

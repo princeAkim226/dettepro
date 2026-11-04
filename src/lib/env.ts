@@ -39,6 +39,7 @@ export function getEnv() {
     whatsappTemplateName: process.env.WHATSAPP_TEMPLATE_NAME ?? "dettepro_rappel",
     whatsappTemplateLang: process.env.WHATSAPP_TEMPLATE_LANG ?? "fr",
     whatsappVerifyToken: process.env.WHATSAPP_VERIFY_TOKEN ?? "",
+    whatsappAppSecret: process.env.WHATSAPP_APP_SECRET ?? "",
     ttsEnabled: process.env.TTS_ENABLED === "true",
     subscriptionAmount: 2000,
     trialDays: 7,
