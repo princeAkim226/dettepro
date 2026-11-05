@@ -21,6 +21,8 @@ import {
 } from "@/app/actions";
 
 const QUICK_AMOUNTS = [500, 1000, 5000, 10000];
+// Ordre d'affichage lundi → dimanche ; valeurs de getUTCDay (0 = dimanche)
+const WEEK_DAYS = [1, 2, 3, 4, 5, 6, 0];
 const amountFormat = new Intl.NumberFormat("fr-FR");
 
 function AmountField({
@@ -421,13 +423,25 @@ export function ReminderSettingsForm({
 }) {
   const t = useTranslations("reminders");
   const tc = useTranslations("common");
+  // onSubmit plutôt que action : React réinitialise le formulaire après une action,
+  // ce qui réaffichait les anciennes valeurs alors que la page reste ouverte
+  const [channel, setChannel] = useState(initial.channel);
+  const [frequency, setFrequency] = useState(initial.frequencyType);
+  const [weeklyDay, setWeeklyDay] = useState(initial.weeklyDay);
   const [ok, setOk] = useState(false);
   const [pending, start] = useTransition();
+  const time = [initial.hour, initial.minute].map((n) => String(n).padStart(2, "0")).join(":");
 
   return (
     <form
       className="flex flex-col gap-4"
-      action={(fd) => {
+      onChange={() => setOk(false)}
+      onSubmit={(e) => {
+        e.preventDefault();
+        const fd = new FormData(e.currentTarget);
+        const [hour, minute] = String(fd.get("time") || time).split(":");
+        fd.set("hour", hour);
+        fd.set("minute", minute);
         start(async () => {
           await saveReminderSettingsAction(fd);
           setOk(true);
@@ -441,7 +455,12 @@ export function ReminderSettingsForm({
 
       <div className="field">
         <label htmlFor="channel">{t("channel")}</label>
-        <select id="channel" name="channel" defaultValue={initial.channel}>
+        <select
+          id="channel"
+          name="channel"
+          value={channel}
+          onChange={(e) => setChannel(e.target.value)}
+        >
           <option value="text">{t("text")}</option>
           <option value="voice">{t("voice")}</option>
           <option value="both">{t("both")}</option>
@@ -450,53 +469,59 @@ export function ReminderSettingsForm({
 
       <div className="field">
         <label htmlFor="frequencyType">{t("frequency")}</label>
-        <select id="frequencyType" name="frequencyType" defaultValue={initial.frequencyType}>
+        <select
+          id="frequencyType"
+          name="frequencyType"
+          value={frequency}
+          onChange={(e) => setFrequency(e.target.value)}
+        >
           <option value="daily">{t("daily")}</option>
           <option value="weekly">{t("weekly")}</option>
           <option value="every_n_days">{t("everyN")}</option>
         </select>
       </div>
 
-      <div className="field">
-        <label htmlFor="weeklyDay">{t("day")} (0=dim … 5=ven)</label>
-        <input
-          id="weeklyDay"
-          name="weeklyDay"
-          type="number"
-          min={0}
-          max={6}
-          defaultValue={initial.weeklyDay}
-        />
-      </div>
-
-      <div className="field">
-        <label htmlFor="everyNDays">N jours</label>
-        <input
-          id="everyNDays"
-          name="everyNDays"
-          type="number"
-          min={1}
-          max={30}
-          defaultValue={initial.everyNDays ?? 3}
-        />
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+      {/* Un champ masqué garde sa valeur : l'action enregistre tous les réglages à chaque fois */}
+      {frequency === "weekly" ? (
         <div className="field">
-          <label htmlFor="hour">{t("hour")}</label>
-          <input id="hour" name="hour" type="number" min={0} max={23} defaultValue={initial.hour} />
+          <label htmlFor="weeklyDay">{t("day")}</label>
+          <select
+            id="weeklyDay"
+            name="weeklyDay"
+            value={weeklyDay}
+            onChange={(e) => setWeeklyDay(Number(e.target.value))}
+          >
+            {WEEK_DAYS.map((day) => (
+              <option key={day} value={day}>
+                {t(`days.${day}`)}
+              </option>
+            ))}
+          </select>
         </div>
+      ) : (
+        <input type="hidden" name="weeklyDay" value={weeklyDay} />
+      )}
+
+      {frequency === "every_n_days" ? (
         <div className="field">
-          <label htmlFor="minute">Min</label>
+          <label htmlFor="everyNDays">{t("everyNLabel")}</label>
           <input
-            id="minute"
-            name="minute"
+            id="everyNDays"
+            name="everyNDays"
             type="number"
-            min={0}
-            max={59}
-            defaultValue={initial.minute}
+            inputMode="numeric"
+            min={1}
+            max={30}
+            defaultValue={initial.everyNDays ?? 3}
           />
         </div>
+      ) : (
+        <input type="hidden" name="everyNDays" value={initial.everyNDays ?? 3} />
+      )}
+
+      <div className="field">
+        <label htmlFor="time">{t("hour")}</label>
+        <input id="time" name="time" type="time" required defaultValue={time} />
       </div>
 
       <div className="field">
@@ -505,12 +530,18 @@ export function ReminderSettingsForm({
           id="messageTemplate"
           name="messageTemplate"
           defaultValue={initial.messageTemplate ?? ""}
-          placeholder="{name} {amount} {shop}"
         />
+        <p style={{ color: "var(--muted)", fontSize: "0.85rem", margin: 0 }}>
+          {t("templateHint", { vars: "{name}, {amount}, {shop}" })}
+        </p>
       </div>
 
-      <p style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{t("hint")}</p>
-      {ok && <p style={{ color: "var(--ok)" }}>OK</p>}
+      <p style={{ color: "var(--muted)", fontSize: "0.85rem", margin: 0 }}>{t("hint")}</p>
+      {ok && (
+        <p role="status" style={{ color: "var(--ok)", margin: 0 }}>
+          {t("saved")}
+        </p>
+      )}
       <button className="btn btn-primary" disabled={pending}>
         {pending ? tc("loading") : t("save")}
       </button>

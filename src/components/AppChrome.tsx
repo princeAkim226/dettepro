@@ -11,11 +11,23 @@ export function BottomNav({ isAdmin }: { isAdmin?: boolean }) {
   const pathname = usePathname();
 
   const items = [
-    { href: "/dashboard", label: t("dashboard") },
-    { href: "/customers", label: t("customers") },
-    { href: "/reminders", label: t("reminders") },
-    { href: isAdmin ? "/admin" : "/billing", label: isAdmin ? t("admin") : t("billing") },
-  ] as const;
+    { href: "/dashboard", label: t("dashboard"), icon: "M3 11.5 12 4l9 7.5M5.5 10v10h13V10M10 20v-6h4v6" },
+    {
+      href: "/customers",
+      label: t("customers"),
+      icon: "M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20M9.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M21 20v-1.5a4 4 0 0 0-3-3.9M15.5 4.2a3.5 3.5 0 0 1 0 6.6",
+    },
+    {
+      href: "/reminders",
+      label: t("reminders"),
+      icon: "M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2h-15zM10 21h4",
+    },
+    {
+      href: isAdmin ? "/admin" : "/billing",
+      label: isAdmin ? t("admin") : t("billing"),
+      icon: "M3 6.5h18v11H3zM3 10.5h18M7 14.5h3",
+    },
+  ];
 
   return (
     <nav className="bottom-nav">
@@ -25,6 +37,9 @@ export function BottomNav({ isAdmin }: { isAdmin?: boolean }) {
           href={item.href}
           data-active={pathname.startsWith(item.href) ? "true" : "false"}
         >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d={item.icon} />
+          </svg>
           {item.label}
         </Link>
       ))}

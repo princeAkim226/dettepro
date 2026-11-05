@@ -20,8 +20,13 @@ export function formatWhatsAppError(raw: string): string {
   }
 }
 
+async function readMessageId(res: Response): Promise<string | undefined> {
+  const data = (await res.json().catch(() => null)) as { messages?: { id?: string }[] } | null;
+  return data?.messages?.[0]?.id;
+}
+
 type WaSendResult =
-  | { ok: true; dryRun: boolean; via: "template" | "text" }
+  | { ok: true; dryRun: boolean; via: "template" | "text"; messageId?: string }
   | { ok: false; error: string };
 
 async function postWhatsAppMessage(payload: Record<string, unknown>): Promise<WaSendResult> {
@@ -46,7 +51,7 @@ async function postWhatsAppMessage(payload: Record<string, unknown>): Promise<Wa
     const via = (payload.type === "template" ? "template" : "text") as
       | "template"
       | "text";
-    return { ok: true, dryRun: false, via };
+    return { ok: true, dryRun: false, via, messageId: await readMessageId(res) };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return {
@@ -198,7 +203,7 @@ export async function sendWhatsAppAudio(
     if (!msgRes.ok) {
       return { ok: false as const, error: formatWhatsAppError(await msgRes.text()) };
     }
-    return { ok: true as const, dryRun: false };
+    return { ok: true as const, dryRun: false, messageId: await readMessageId(msgRes) };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return {

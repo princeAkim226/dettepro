@@ -7,6 +7,7 @@ import { displayPhone, whatsappLink } from "@/lib/phone";
 import { buildReminderMessage } from "@/lib/reminders";
 import { guardAccess } from "@/lib/guards";
 import { RemindButton } from "@/components/Forms";
+import { ReminderHistory } from "@/components/ReminderHistory";
 
 export default async function CustomerPage({
   params,
@@ -24,6 +25,7 @@ export default async function CustomerPage({
     include: {
       debts: { orderBy: { createdAt: "desc" } },
       payments: { orderBy: { createdAt: "desc" } },
+      reminderLogs: { orderBy: { createdAt: "desc" }, take: 5 },
     },
   });
   if (!customer) notFound();
@@ -119,6 +121,10 @@ export default async function CustomerPage({
             </Link>
           </p>
         )}
+      </div>
+
+      <div style={{ marginBottom: "1.5rem" }}>
+        <ReminderHistory logs={customer.reminderLogs} />
       </div>
 
       <h2 style={{ fontSize: "1.05rem", marginBottom: "0.25rem" }}>{t("history")}</h2>
