@@ -39,9 +39,14 @@ export function CustomerRow({ row }: { row: CustomerRowData }) {
 
   return (
     <Link href={`/customers/${row.id}`} className="list-row">
-      <div style={{ minWidth: 0 }}>
-        <div style={{ fontWeight: 700, overflowWrap: "anywhere" }}>{row.name}</div>
-        <div style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{row.phone || "—"}</div>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", minWidth: 0 }}>
+        <span className={row.balance > 0 ? "avatar" : "avatar avatar-paid"} aria-hidden="true">
+          {row.name.trim().charAt(0).toUpperCase()}
+        </span>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontWeight: 700, overflowWrap: "anywhere" }}>{row.name}</div>
+          <div style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{row.phone || "—"}</div>
+        </div>
       </div>
       <div style={{ textAlign: "right", flexShrink: 0 }}>
         <div style={{ fontWeight: 700, color: row.balance > 0 ? "var(--yellow)" : "var(--ok)" }}>

@@ -171,5 +171,49 @@
       "limited": "WhatsApp a limité l'envoi vers ce numéro. Réessaie plus tard ou utilise le bouton WhatsApp.",
       "other": "WhatsApp n'a pas pu livrer ce message. Réessaie ou utilise le bouton WhatsApp."
     }
+  },
+  "landing": {
+    "cta": "Essayer gratuitement",
+    "ctaNote": "{days} jours d'essai, sans carte bancaire. Ensuite {price}.",
+    "mockLabel": "Exemple d'écran de DettePro",
+    "mockExample": "Exemple d'écran",
+    "benefitsTitle": "Le crédit, sans les oublis",
+    "benefits": {
+      "who": {
+        "title": "Qui te doit quoi",
+        "text": "Chaque client a sa fiche, avec ses dettes et ses paiements. Retrouve-le en tapant son nom ou son numéro."
+      },
+      "total": {
+        "title": "Le total se calcule seul",
+        "text": "Tu vois ce qu'on te doit en tout, et qui relancer en premier. Plus besoin de refaire les additions."
+      },
+      "whatsapp": {
+        "title": "Relance en un geste",
+        "text": "Appelle ton client ou ouvre WhatsApp avec le message déjà écrit, et le montant exact."
+      }
+    },
+    "stepsTitle": "Comment ça marche",
+    "steps": {
+      "add": {
+        "title": "Ajoute tes clients",
+        "text": "Un nom et un numéro suffisent."
+      },
+      "note": {
+        "title": "Note les dettes et les paiements",
+        "text": "Quelques secondes à chaque vente à crédit."
+      },
+      "remind": {
+        "title": "Relance au bon moment",
+        "text": "Commence par ceux qui doivent le plus."
+      }
+    },
+    "priceTitle": "Un seul prix",
+    "priceTrial": "Essai gratuit de {days} jours.",
+    "included": {
+      "customers": "Clients et dettes sans limite",
+      "history": "Historique complet de chaque client",
+      "whatsapp": "Appel et WhatsApp depuis la fiche client",
+      "corrections": "Corrige une erreur de saisie à tout moment"
+    }
   }
 }
