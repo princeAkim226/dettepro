@@ -42,6 +42,6 @@ export function getEnv() {
     whatsappAppSecret: process.env.WHATSAPP_APP_SECRET ?? "",
     ttsEnabled: process.env.TTS_ENABLED === "true",
     subscriptionAmount: 2000,
-    trialDays: 7,
+    trialDays: 30,
   };
 }
